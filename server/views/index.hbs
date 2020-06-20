@@ -1,0 +1,119 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a href="" class="navbar-brand text-warning">
+    WebScraper
+  </a>
+  <button class="navbar-toggler" data-toggle="collapse" data-target="#navigator">
+    <span class="line-1"></span>
+    <span class="line-1"></span>
+    <span class="line-1"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navigator">
+    <ul class="navbar-nav ml-auto px-3">
+      <li class="nav-item">
+        <a href="" class="nav-link font-weight-bold text-light">
+          <i class="fas fa-home text-warning mr-1"></i>
+          HOME
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="" class="nav-link font-weight-bold text-light">
+          <i class="fas fa-info-circle text-warning mr-1"></i>
+          ABOUT
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+<div class="container-fluid py-5">
+  <div class="row">
+    <div class="col-11 col-sm-10 col-md-9 col-lg-8 col-xl-6 mx-auto">
+      <!-- Movie Searcher -->
+      <form action="" method="POST" id="web-scraper-form">
+        <div class="form-group input-group">
+          <input type="search" name="url" class="form-control" placeholder="website address:" autocomplete="off" />
+          <span class="input-group-append">
+            <button class="input-group-text text-uppercase font-weight-bold bg-warning">
+              scrape
+              <i class="fas fa-spider ml-1"></i>
+            </button>
+          </span>
+        </div>
+      </form>
+      <!-- End of Movie searcher -->
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h5>search result:</h5>
+      <div class="card shadow" style="position: relative;" id="result">
+        <div class="card-body">
+
+          <div id="image-box">
+
+          </div>
+
+
+
+
+          <div class="chart-box py-5">
+            <div id="wordCount">
+
+            </div>
+
+
+            <canvas id="myChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script type="mustache/template" id="image-slider-template">
+  <div id="demo" class="carousel slide" data-ride="carousel">
+
+  <!-- Indicators -->
+  {{!-- <ul class="carousel-indicators">
+    <li data-target="#demo" data-slide-to="0" class="active"></li>
+    <li data-target="#demo" data-slide-to="1"></li>
+    <li data-target="#demo" data-slide-to="2"></li>
+  </ul> --}}
+
+  <!-- The slideshow -->
+  <div class="carousel-inner">
+    \{{#imageResults}}
+    <div class="carousel-item \{{state}} text-center" >
+      <img src="\{{src}}" alt="web image" style="width: 300px; height: 250px;">
+    </div>
+    \{{/imageResults}}
+  </div>
+
+  <!-- Left and right controls -->
+  <a class="carousel-control-prev bg-dark" href="#demo" data-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </a>
+  <a class="carousel-control-next bg-dark" href="#demo" data-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </a>
+
+  </div>
+</script>
+
+<script type="mustache/template" id="word-count-template">
+  <h5><u>Top 10 occuring words:</u></h5>
+  <h3>Total Words: \{{totalWords}}</h3>
+</script>
+
+<script type="mustache/template" id="loading-template">
+<div class="loading">
+  <img src="/img/loading.gif" alt="loading anime">
+</div>
+</script>
