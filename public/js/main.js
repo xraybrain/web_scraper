@@ -73,7 +73,6 @@ $(document).ready(function () {
     });
 
     if (formData.url != '') {
-      
       if (!formData.url.startsWith('http')) {
         formData.url = 'http://' + formData.url;
       }

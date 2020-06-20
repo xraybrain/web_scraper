@@ -25,7 +25,6 @@ const filterResult = (results = {}) => {
 };
 
 async function crawler(url) {
-
   let scrapedResult = {};
 
   try {
@@ -45,7 +44,11 @@ async function crawler(url) {
           ...images,
           ...document.querySelectorAll('input[type="image"]'),
         ];
-        let nodes = document.querySelectorAll('body');
+        let text = document.querySelector('body').innerText;
+        text = text.replace(/[\n\r\f\t]/g, ' ');
+        text = text.replace(/[ ]{2,}/g, ' ');
+        text = text.toLowerCase();
+
         let state = 'active';
 
         for (const image of images) {
@@ -61,27 +64,36 @@ async function crawler(url) {
           }
         }
 
-        for (const node of nodes) {
-          let text = node.textContent.trim().replace(/[ \n\r\f\t]{2,}/g, ' ');
-          text = text.replace(/(<.+?>|<\/.+?>)+?/gi, '');
-          text = text.toLowerCase();
-
-          if (text) {
-            for (const word of text.split(' ')) {
-              if (/([A-Za-z])+?/.test(word)) {
-                if (textResults.hasOwnProperty(word)) {
-                  textResults[word] += 1;
-                } else {
-                  textResults[word] = 1;
-                }
-              }
+        for (const word of text.split(' ')) {
+          if (/([A-Za-z])+?/.test(word)) {
+            if (textResults.hasOwnProperty(word)) {
+              textResults[word] += 1;
+            } else {
+              textResults[word] = 1;
             }
           }
         }
 
+        // for (const node of nodes) {
+        //   let text = node.textContent.trim().replace(/[ \n\r\f\t]{2,}/g, ' ');
+        //   text = text.replace(/(<.+?>|<\/.+?>)+?/gi, '');
+        //   text = text.toLowerCase();
+
+        //   if (text) {
+        //     for (const word of text.split(' ')) {
+        //       if (/([A-Za-z])+?/.test(word)) {
+        //         if (textResults.hasOwnProperty(word)) {
+        //           textResults[word] += 1;
+        //         } else {
+        //           textResults[word] = 1;
+        //         }
+        //       }
+        //     }
+        //   }
+        // }
+
         return { imageResults, textResults };
       });
-    console.log(scrapedResult);
 
     return scrapedResult;
   } catch (error) {
