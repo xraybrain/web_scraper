@@ -55,54 +55,118 @@ var drawChart = function (data, labels) {
   });
 };
 
-$(document).ready(function () {
-  $('#web-scraper-form').on('submit', function (event) {
-    event.preventDefault();
+// $(document).ready(function () {
+//   $('#web-scraper-form').on('submit', function (event) {
+//     event.preventDefault();
 
+//     $('#result').append($('#loading-template').html());
+//     $('#image-box').html('');
+//     $('#wordCount').html('');
+//     var canvas = document.getElementById('myChart');
+//     var context = canvas.getContext('2d');
+//     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+
+//     var formData = Object.create(null);
+
+//     $.each($(this).serializeArray(), function (_, field) {
+//       formData[field.name] = field.value;
+//     });
+
+//     if (formData.url != '') {
+//       if (!formData.url.startsWith('http')) {
+//         formData.url = 'http://' + formData.url;
+//       }
+
+//       (async function () {
+//         response = await getData('/api/scraper/?url=' + formData.url);
+//         $('#result .loading').remove();
+//         if (response.error === null) {
+//           var labels = [],
+//             data = [];
+//           var firstTenWords = response.wordsResult.firstTenWords;
+
+//           for (var i = 0; i < firstTenWords.length; i++) {
+//             var [key, value] = Object.entries(firstTenWords[i])[0];
+//             labels.push(key);
+//             data.push(value);
+//           }
+
+//           //-- chart with the firstTenWords returned
+//           drawChart(data, labels);
+
+//           //-- using mustache display the images in website
+//           var template = $('#image-slider-template').html();
+//           var html = Mustache.to_html(template, response);
+//           $('#image-box').html(html);
+
+//           template = $('#word-count-template').html();
+//           html = Mustache.to_html(template, response.wordsResult);
+//           $('#wordCount').html(html);
+//         } else {
+//         }
+//       })();
+//     }
+//   });
+// });
+
+var socket = io();
+
+function cleanOutput() {
+  $('#image-box').html('');
+  $('#wordCount').html('');
+  $('#wrapper').html('');
+
+  var canvas = document.getElementById('myChart');
+  var context = canvas.getContext('2d');
+  context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+}
+
+function formatURL(url) {
+  return !url.startsWith('http') ? 'http://' + url : url;
+}
+
+$('#web-scraper-form').on('submit', function (event) {
+  event.preventDefault();
+  cleanOutput();
+
+  var url = $('#url').val();
+
+  if (url != '') {
+    url = formatURL(url);
     $('#result').append($('#loading-template').html());
-    $('#image-box').html('');
-    $('#wordCount').html('');
-    var canvas = document.getElementById('myChart');
-    var context = canvas.getContext('2d');
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    socket.emit('SCRAPE', { url: url });
+  }
+});
 
-    var formData = Object.create(null);
+socket.on('SCRAPE_RESULT', function (data) {
+  console.log(data);
 
-    $.each($(this).serializeArray(), function (_, field) {
-      formData[field.name] = field.value;
-    });
+  $('#result .loading').remove();
 
-    if (formData.url != '') {
-      if (!formData.url.startsWith('http')) {
-        formData.url = 'http://' + formData.url;
-      }
+  if (data.error === null) {
+    var labels = [],
+      chartData = [];
 
-      (async function () {
-        response = await getData('/api/scraper/?url=' + formData.url);
-        if (response.error === null) {
-          var labels = [],
-            data = [];
-          var firstTenWords = response.wordsResult.firstTenWords;
+    var firstTenWords = data.wordsResult.firstTenWords;
 
-          for (var i = 0; i < firstTenWords.length; i++) {
-            var [key, value] = Object.entries(firstTenWords[i])[0];
-            labels.push(key);
-            data.push(value);
-          }
-          $('#result .loading').remove();
-          //-- chart with the firstTenWords returned
-          drawChart(data, labels);
-
-          //-- using mustache display the images in website
-          var template = $('#image-slider-template').html();
-          var html = Mustache.to_html(template, response);
-          $('#image-box').html(html);
-
-          template = $('#word-count-template').html();
-          html = Mustache.to_html(template, response.wordsResult);
-          $('#wordCount').html(html);
-        }
-      })();
+    for (var i = 0; i < firstTenWords.length; i++) {
+      var [key, value] = Object.entries(firstTenWords[i])[0];
+      labels.push(key);
+      chartData.push(value);
     }
-  });
+
+    //-- chart with the firstTenWords returned
+    drawChart(chartData, labels);
+
+    //-- using mustache display the images in website
+    var template = $('#image-slider-template').html();
+    var html = Mustache.to_html(template, data);
+    $('#image-box').html(html);
+
+    template = $('#word-count-template').html();
+    html = Mustache.to_html(template, data.wordsResult);
+    $('#wordCount').html(html);
+  } else {
+    $('#wrapper').append($('#error-message').html());
+  }
 });

@@ -1,18 +1,6 @@
 const Nightmare = require('nightmare');
-// const Queue = require('bull');
-// const redisURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-// const crawlerQueue = new Queue('Crawler Queue', redisURL);
 
-// try {
-//   crawlerQueue.process((job, done) => {
-//     console.log('processing');
-//     done();
-//   });
-// } catch (error) {
-//   console.log(error);
-// }
-
-const filterResult = (results = {}) => {
+exports.filterResult = (results = {}) => {
   let totalWords = 0;
   let firstTenWords = [];
   results = Object.entries(results);
@@ -36,7 +24,7 @@ const filterResult = (results = {}) => {
   return { totalWords, firstTenWords };
 };
 
-async function crawler(url) {
+exports.crawler = async (url) => {
   let scrapedResult = {};
 
   try {
@@ -86,24 +74,6 @@ async function crawler(url) {
           }
         }
 
-        // for (const node of nodes) {
-        //   let text = node.textContent.trim().replace(/[ \n\r\f\t]{2,}/g, ' ');
-        //   text = text.replace(/(<.+?>|<\/.+?>)+?/gi, '');
-        //   text = text.toLowerCase();
-
-        //   if (text) {
-        //     for (const word of text.split(' ')) {
-        //       if (/([A-Za-z])+?/.test(word)) {
-        //         if (textResults.hasOwnProperty(word)) {
-        //           textResults[word] += 1;
-        //         } else {
-        //           textResults[word] = 1;
-        //         }
-        //       }
-        //     }
-        //   }
-        // }
-
         return { imageResults, textResults };
       });
 
@@ -111,22 +81,5 @@ async function crawler(url) {
   } catch (error) {
     console.log(error);
     throw new Error('failed to crawl');
-  }
-}
-
-exports.webScraper = async (req, res, next) => {
-  const baseURL = req.query.url;
-  try {
-    const scrapedResult = await crawler(baseURL);
-    const wordsResult = filterResult(scrapedResult.textResults);
-
-    res.json({
-      error: null,
-      imageResults: scrapedResult.imageResults,
-      wordsResult,
-    });
-  } catch (error) {
-    console.log(error);
-    res.json({ error: true });
   }
 };

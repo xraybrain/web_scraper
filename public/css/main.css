@@ -30,7 +30,7 @@ html {
 }
 
 @media screen and (max-width: 575px) {
-  .chart-box {
-    overflow-x: scroll;
+  .message{
+    font-size: 13px;
   }
 }

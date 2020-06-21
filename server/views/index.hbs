@@ -33,7 +33,8 @@
       <!-- Movie Searcher -->
       <form action="" method="POST" id="web-scraper-form">
         <div class="form-group input-group">
-          <input type="search" name="url" class="form-control" placeholder="website address:" autocomplete="off" />
+          <input type="search" name="url" class="form-control" placeholder="website address:" autocomplete="off"
+            id="url" />
           <span class="input-group-append">
             <button class="input-group-text text-uppercase font-weight-bold bg-warning">
               scrape
@@ -50,10 +51,11 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
-      <h5>search result:</h5>
+      <h5>Scrape Result:</h5>
       <div class="card shadow" style="position: relative;" id="result">
         <div class="card-body">
 
+          <div id="wrapper"></div>
           <div id="image-box">
 
           </div>
@@ -115,5 +117,12 @@
 <script type="mustache/template" id="loading-template">
 <div class="loading">
   <img src="/img/loading.gif" alt="loading anime">
+</div>
+</script>
+
+<script type="mustache/template" id="error-message">
+<div class="message col-6 mx-auto shadow text-center my-5 py-5">
+  <i class="fas fa-info-circle fa-3x text-muted"></i>
+  <p class="pt-2">Sorry, the server was unable to process request, try again after sometime.</p>
 </div>
 </script>
