@@ -1,6 +1,6 @@
 const Bull = require('bull');
-let RedisHost = process.env.REDIS_URL || '127.0.0.1';
-let RedisPort = process.env.REDIS_PORT || 6379;
+let RedisURL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+//let RedisPort = process.env.REDIS_PORT || 6379;
 const { crawler, filterResult } = require('../src/crawler');
 
 // const extractPort = (url) => url.substr(url.lastIndexOf(':') + 1);
@@ -11,15 +11,8 @@ const { crawler, filterResult } = require('../src/crawler');
 //   RedisPort = extractPort(process.env.REDIS_URL);
 // }
 
-console.log(RedisHost, RedisPort);
-
 const CreateCrawlerQueue = () => {
-  const CrawlerQueue = new Bull('WEB_CRAWLER', {
-    redis: {
-      port: RedisPort,
-      host: RedisHost,
-    },
-  });
+  const CrawlerQueue = new Bull('WEB_CRAWLER', RedisURL);
 
   CrawlerQueue.process(async (job, done) => {
     const baseURL = job.data.url;
