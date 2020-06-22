@@ -23,6 +23,7 @@ require('./server/routes/index')(app);
 require('./server/routes/api')(app);
 
 const { crawler, filterResult } = require('./server/src/crawler');
+const { CreateCrawlerQueue } = require('./server/queue/CrawlerQueue');
 
 io.on('connection', (socket) => {
   console.log('a user is online');
@@ -30,26 +31,28 @@ io.on('connection', (socket) => {
   //-- scrape the website
   socket.on('SCRAPE', async (data) => {
     const baseURL = data.url;
+    await CreateCrawlerQueue().add({ url: baseURL });
+    // try {
+    //   const scrapedResult = await crawler(baseURL);
+    //   const wordsResult = filterResult(scrapedResult.textResults);
 
-    try {
-      const scrapedResult = await crawler(baseURL);
-      const wordsResult = filterResult(scrapedResult.textResults);
-
-      socket.emit('SCRAPE_RESULT', {
-        error: null,
-        imageResults: scrapedResult.imageResults,
-        wordsResult,
-      });
-    } catch (error) {
-      console.log(error);
-      socket.emit('SCRAPE_RESULT', {
-        error: true,
-        imageResults: [],
-        wordsResult: {},
-      });
-    }
+    //   socket.emit('SCRAPE_RESULT', {
+    //     error: null,
+    //     imageResults: scrapedResult.imageResults,
+    //     wordsResult,
+    //   });
+    // } catch (error) {
+    //   console.log(error);
+    //   socket.emit('SCRAPE_RESULT', {
+    //     error: true,
+    //     imageResults: [],
+    //     wordsResult: {},
+    //   });
+    // }
   });
 });
+
+global.io = io;
 
 http.listen(PORT, () => {
   console.log(`server is listening on port ::${PORT}`);
