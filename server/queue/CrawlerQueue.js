@@ -11,6 +11,8 @@ if (process.env.REDIS_URL) {
   RedisPort = extractPort(process.env.REDIS_URL);
 }
 
+console.log(RedisHost, RedisPort);
+
 const CreateCrawlerQueue = () => {
   const CrawlerQueue = new Bull('WEB_CRAWLER', {
     redis: {
